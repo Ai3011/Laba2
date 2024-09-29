@@ -728,6 +728,166 @@ int main() {
                 }
             }
         }
+        else if (command == "doubly_list") {
+        string doublyListCommand;
+        while (true) {
+            cout << "Команды для двусвязного списка (addHead, addTail, removeHead, removeTail, read, save, load, exit): ";
+            getline(cin, doublyListCommand);
+
+            if (doublyListCommand == "addHead") {
+                string element;
+                cout << "Введите элемент: ";
+                getline(cin, element);
+                doublyLinkedList.addHead(element);
+            }
+            else if (doublyListCommand == "addTail") {
+                string element;
+                cout << "Введите элемент: ";
+                getline(cin, element);
+                doublyLinkedList.addTail(element);
+            }
+            else if (doublyListCommand == "removeHead") {
+                doublyLinkedList.removeHead();
+            }
+            else if (doublyListCommand == "removeTail") {
+                doublyLinkedList.removeTail();
+            }
+            else if (doublyListCommand == "read") {
+                doublyLinkedList.read();
+            }
+            else if (doublyListCommand == "save") {
+                string saveFilename;
+                cout << "Введите имя файла для сохранения: ";
+                getline(cin, saveFilename);
+                try {
+                    doublyLinkedList.saveToFile(saveFilename);
+                    cout << "Данные сохранены в файл." << endl;
+                }
+                catch (const exception& e) {
+                    cerr << "Ошибка: " << e.what() << endl;
+                }
+            }
+            else if (doublyListCommand == "load") {
+                string loadFilename;
+                cout << "Введите имя файла для загрузки: ";
+                getline(cin, loadFilename);
+                try {
+                    doublyLinkedList.loadFromFile(loadFilename);
+                    cout << "Данные загружены из файла." << endl;
+                }
+                catch (const exception& e) {
+                    cerr << "Ошибка: " << e.what() << endl;
+                }
+            }
+            else if (doublyListCommand == "exit") {
+                break;
+            }
+            else {
+                cout << "Неизвестная команда." << endl;
+            }
+        }
+        }
+        else if (command == "stack") {
+        string stackCommand;
+        while (true) {
+            cout << "Команды для стека (push, pop, read, save, load, exit): ";
+            getline(cin, stackCommand);
+
+            if (stackCommand == "push") {
+                string element;
+                cout << "Введите элемент: ";
+                getline(cin, element);
+                stack.push(element);
+            }
+            else if (stackCommand == "pop") {
+                stack.pop();
+            }
+            else if (stackCommand == "read") {
+                stack.read();
+            }
+            else if (stackCommand == "save") {
+                string saveFilename;
+                cout << "Введите имя файла для сохранения: ";
+                getline(cin, saveFilename);
+                try {
+                    stack.saveToFile(saveFilename);
+                    cout << "Данные сохранены в файл." << endl;
+                }
+                catch (const exception& e) {
+                    cerr << "Ошибка: " << e.what() << endl;
+                }
+            }
+            else if (stackCommand == "load") {
+                string loadFilename;
+                cout << "Введите имя файла для загрузки: ";
+                getline(cin, loadFilename);
+                try {
+                    stack.loadFromFile(loadFilename);
+                    cout << "Данные загружены из файла." << endl;
+                }
+                catch (const exception& e) {
+                    cerr << "Ошибка: " << e.what() << endl;
+                }
+            }
+            else if (stackCommand == "exit") {
+                break;
+            }
+            else {
+                cout << "Неизвестная команда." << endl;
+            }
+        }
+        }
+        else if (command == "queue") {
+        string queueCommand;
+        while (true) {
+            cout << "Команды для очереди (push, pop, read, save, load, exit): ";
+            getline(cin, queueCommand);
+
+            if (queueCommand == "push") {
+                string element;
+                cout << "Введите элемент: ";
+                getline(cin, element);
+                queue.push(element);
+            }
+            else if (queueCommand == "pop") {
+                queue.pop();
+            }
+            else if (queueCommand == "read") {
+                queue.read();
+            }
+            else if (queueCommand == "save") {
+                string saveFilename;
+                cout << "Введите имя файла для сохранения: ";
+                getline(cin, saveFilename);
+                try {
+                    queue.saveToFile(saveFilename);
+                    cout << "Данные сохранены в файл." << endl;
+                }
+                catch (const exception& e) {
+                    cerr << "Ошибка: " << e.what() << endl;
+                }
+            }
+            else if (queueCommand == "load") {
+                string loadFilename;
+                cout << "Введите имя файла для загрузки: ";
+                getline(cin, loadFilename);
+                try {
+                    queue.loadFromFile(loadFilename);
+                    cout << "Данные загружены из файла." << endl;
+                }
+                catch (const exception& e) {
+                    cerr << "Ошибка: " << e.what() << endl;
+                }
+            }
+            else if (queueCommand == "exit") {
+                break;
+            }
+            else {
+                cout << "Неизвестная команда." << endl;
+            }
+        }
+        }
+
         // Команды для работы с AVL-деревом
         else if (command == "avl") {
             string avlCommand;
