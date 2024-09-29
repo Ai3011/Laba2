@@ -6,14 +6,6 @@
 using namespace std;
 
 // Массив строк
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <stdexcept>
-
-using namespace std;
-
-// Массив строк
 struct StringArray {
     string* data;
     size_t size;
