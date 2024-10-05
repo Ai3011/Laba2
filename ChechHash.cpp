@@ -1,4 +1,5 @@
 #include <iostream>
+#include <windows.h>
 #include "Array.h"
 #include "List.h"
 #include "Dlist.h"
@@ -72,7 +73,7 @@ string get(HashTable& ht, const string& key, int index) {
     }
 
     // Если узел с таким ключом не найден или номер узла превышает количество узлов, бросаем исключение
-    throw std::runtime_error("Key not found or node index out of range");
+    throw runtime_error("Key not found or node index out of range");
 }
 
 
@@ -136,9 +137,70 @@ void printHashTable(const HashTable& ht) {
     }
 }
 
+// Функция для записи хэш-таблицы в файл и последующей очистки
+void saveToFileAndClear(HashTable& ht, const string& filename) {
+    ofstream outFile(filename); // Открываем файл для записи
+    if (!outFile) { // Проверка успешного открытия файла
+        throw runtime_error("Не удалось открыть файл для записи");
+    }
+
+    // Проходим по всем ячейкам хэш-таблицы
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        HNode* curNode = ht.table[i]; // Берем первый элемент цепочки
+        while (curNode) {
+            // Записываем ключ и значение в файл
+            outFile << curNode->key << "=" << curNode->value << endl;
+            curNode = curNode->next; // Переходим к следующему узлу
+        }
+    }
+
+    outFile.close(); // Закрываем файл
+
+    // Очищаем хэш-таблицу
+    clearHashTable(ht);
+    initHashTable(ht);
+}
+
+void loadFromFile(HashTable& ht, const string& filename) {
+    clearHashTable(ht); // Очистка хэш-таблицы перед загрузкой
+    initHashTable(ht); 
+
+    ifstream inFile(filename); // Открываем файл для чтения
+    if (!inFile) { // Проверка успешного открытия файла
+        throw runtime_error("Не удалось открыть файл : " + filename);
+    }
+
+    string line;
+    while (getline(inFile, line)) { // Читаем файл построчно
+        if (line.empty()) { // Проверка на пустую строку
+            continue; // Пропускаем пустые строки
+        }
+
+        size_t pos = line.find('='); // Находим позицию символа '='
+        if (pos == string::npos) { // Если символ не найден, пропускаем строку
+            continue; // Пропускаем строки без символа '='
+        }
+
+        string key = line.substr(0, pos); // Извлекаем ключ
+        string value = line.substr(pos + 1); // Извлекаем значение
+        
+        // Отладочное сообщение о загружаемой паре
+        cout << "Загруженная пара: " << key << " = " << value << endl;
+
+        insert(ht, key, value); // Вставляем пару ключ-значение в хэш-таблицу
+    }
+
+    inFile.close(); // Закрываем файл
+    cout << "Загрузка завершена." << endl;
+}
+
 
 int main() {
     setlocale(LC_ALL, "RU");
+    SetConsoleOutputCP(1251);
+    SetConsoleCP(1251);
+
+
     StringArray arr;
     LinkedList linkedList;
     DoublyLinkedList doublyLinkedList;
@@ -582,7 +644,7 @@ int main() {
         else if (command == "hashtable") {
         string hashTableCommand;
         while (true) {
-            cout << "Команды для хэш-таблицы (insert, get, remove, clear, print, exit): ";
+            cout << "Команды для хэш-таблицы (insert, get, remove, clear, print, load, save, exit): ";
             getline(cin, hashTableCommand);
 
             if (hashTableCommand == "insert") {
@@ -607,11 +669,10 @@ int main() {
                     string value = get(ht, key, index);
                     cout << "Значение: " << value << endl;
                 }
-                catch (const std::runtime_error& e) {
+                catch (const runtime_error& e) {
                     cerr << "Ошибка: " << e.what() << endl; // Обработка исключения и вывод сообщения об ошибке
                 }
             }
-
             else if (hashTableCommand == "remove") {
                 string key;
                 cout << "Введите ключ для удаления: ";
@@ -628,6 +689,30 @@ int main() {
                 cout << "Содержимое хэш-таблицы:" << endl;
                 printHashTable(ht); // Выводим содержимое хэш-таблицы
             }
+            else if (hashTableCommand == "load") {
+                string filename;
+                cout << "Введите имя файла для загрузки: ";
+                getline(cin, filename);
+                try {
+                    loadFromFile(ht, filename); // Загрузка хэш-таблицы из файла
+                    cout << "Хэш-таблица успешно загружена из файла " << filename << endl;
+                }
+                catch (const runtime_error& e) {
+                    cerr << "Ошибка: " << e.what() << endl;
+                }
+            }
+            else if (hashTableCommand == "save") {
+                string filename;
+                cout << "Введите имя файла для сохранения: ";
+                getline(cin, filename);
+                try {
+                    saveToFileAndClear(ht, filename); // Сохранение в файл
+                    cout << "Хэш-таблица успешно сохранена в файл " << filename << endl;
+                }
+                catch (const runtime_error& e) {
+                    cerr << "Ошибка: " << e.what() << endl;
+                }
+            }
             else if (hashTableCommand == "exit") {
                 clearHashTable(ht); // Очистка перед выходом
                 break;
@@ -636,7 +721,7 @@ int main() {
                 cout << "Неизвестная команда." << endl;
             }
         }
-        }
+}
         // Завершение программы
         else if (command == "exit") {
         break;
