@@ -59,17 +59,20 @@ string get(HashTable& ht, const string& key, int index) {
 
     // Ищем узел в цепочке
     while (curNode) {
-        count++; // Увеличиваем счетчик при переходе к следующему узлу
+        // Проверяем, совпадает ли ключ
+        if (curNode->key == key) {
+            count++; // Увеличиваем счетчик при переходе к следующему узлу
 
-        if (count == index) { // Если счетчик соответствует запрашиваемому индексу
-            return curNode->value; // Возвращаем значение узла
+            if (count == index) { // Если счетчик соответствует запрашиваемому индексу
+                return curNode->value; // Возвращаем значение узла
+            }
         }
 
         curNode = curNode->next; // Переходим к следующему узлу
     }
 
-    // Если узел с таким индексом не существует, возвращаем пустую строку (или можно бросить исключение)
-    return "-"; // Альтернатива: throw runtime_error("Node not found at the given index");
+    // Если узел с таким ключом не найден или номер узла превышает количество узлов, бросаем исключение
+    throw std::runtime_error("Key not found or node index out of range");
 }
 
 
@@ -116,6 +119,21 @@ void clearHashTable(HashTable& ht) {
         ht.table[i] = nullptr; // Обнуляем указатель на цепочку
     }
     delete[] ht.table; // Освобождаем память, выделенную под массив указателей
+}
+
+// Функция для вывода всей хэш-таблицы
+void printHashTable(const HashTable& ht) {
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        HNode* curNode = ht.table[i]; // Берем первый элемент цепочки
+        if (curNode) { // Если в цепочке есть элементы
+            cout << "Индекс " << i << " – ";
+            while (curNode) {
+                cout << "[" << curNode->key << ": " << curNode->value << "] ";
+                curNode = curNode->next; // Переходим к следующему узлу
+            }
+            cout << endl; // Переносим строку после вывода всей цепочки
+        }
+    }
 }
 
 
@@ -564,7 +582,7 @@ int main() {
         else if (command == "hashtable") {
         string hashTableCommand;
         while (true) {
-            cout << "Команды для хэш-таблицы (insert, get, remove, clear, exit): ";
+            cout << "Команды для хэш-таблицы (insert, get, remove, clear, print, exit): ";
             getline(cin, hashTableCommand);
 
             if (hashTableCommand == "insert") {
@@ -579,20 +597,18 @@ int main() {
             else if (hashTableCommand == "get") {
                 string key;
                 int index;
-
                 cout << "Введите ключ: ";
                 getline(cin, key);
-
-                cout << "Введите индекс узла (1 для первого, 2 для второго, 3 для третьего и т.д.): ";
-                cin >> index; // Читаем индекс узла
-                cin.ignore(); // Игнорируем оставшийся символ новой строки после чтения целого числа
+                cout << "Введите индекс узла (1 для первого, 2 для второго и т.д.): ";
+                cin >> index;
+                cin.ignore(); // Игнорируем оставшийся символ новой строки
 
                 try {
-                    string value = get(ht, key, index); // Используем новую функцию для получения узла
+                    string value = get(ht, key, index);
                     cout << "Значение: " << value << endl;
                 }
-                catch (const exception& e) {
-                    cerr << "Ошибка: " << e.what() << endl;
+                catch (const std::runtime_error& e) {
+                    cerr << "Ошибка: " << e.what() << endl; // Обработка исключения и вывод сообщения об ошибке
                 }
             }
 
@@ -607,6 +623,10 @@ int main() {
                 clearHashTable(ht);
                 cout << "Хэш-таблица очищена." << endl;
                 initHashTable(ht); // Реинициализация после очистки
+            }
+            else if (hashTableCommand == "print") {
+                cout << "Содержимое хэш-таблицы:" << endl;
+                printHashTable(ht); // Выводим содержимое хэш-таблицы
             }
             else if (hashTableCommand == "exit") {
                 clearHashTable(ht); // Очистка перед выходом
